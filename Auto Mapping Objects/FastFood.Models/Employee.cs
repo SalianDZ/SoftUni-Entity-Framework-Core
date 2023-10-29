@@ -1,29 +1,34 @@
-﻿namespace FastFood.Models
-{
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+﻿using FastFoodCommon.EntityConfiguration;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
+namespace FastFood.Models
+{
     public class Employee
     {
-        public int Id { get; set; }
+        public Employee()
+        {
+            Id = Guid.NewGuid().ToString();
+            Orders = new HashSet<Order>();
+        }
 
-        [Required]
-        [StringLength(30, MinimumLength = 3)]
+        [Key] 
+        public string Id { get; set; }
+
+        [StringLength(ValidationConstants.EmployeeNameMaxLength, MinimumLength = 3)]
         public string Name { get; set; } = null!;
 
-        [Required]
         [Range(15, 80)]
         public int Age { get; set; }
 
-        [Required]
-        [StringLength(30, MinimumLength = 3)]
+        [StringLength(ValidationConstants.EmployeeAddressMaxLength, MinimumLength = 3)]
         public string Address { get; set; } = null!;
 
+        [ForeignKey(nameof(Position))]
         public int PositionId { get; set; }
 
-        [Required]
-        public Position Position { get; set; } = null!;
+        public virtual Position Position { get; set; } = null!;
 
-        public ICollection<Order> Orders { get; set; } = new List<Order>(); 
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

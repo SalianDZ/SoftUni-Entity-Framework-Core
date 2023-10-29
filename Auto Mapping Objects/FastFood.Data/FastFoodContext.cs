@@ -30,6 +30,15 @@ namespace FastFood.Data
 
         public DbSet<Position> Positions { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=DESKTOP-TMJTP0L\\SQLEXPRESS;Database=FastFood;Trusted_Connection=True;")
+                    .UseLazyLoadingProxies();
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<OrderItem>()

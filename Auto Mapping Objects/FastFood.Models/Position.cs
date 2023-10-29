@@ -1,5 +1,6 @@
 ﻿namespace FastFood.Models
 {
+    using FastFoodCommon.EntityConfiguration;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
@@ -10,10 +11,10 @@
             Employees = new HashSet<Employee>();
         }
 
+        [Key]
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(30, MinimumLength = 3)]
+        [StringLength(ValidationConstants.PositionNameMaxLength, MinimumLength = 3)]
         public string Name { get; set; } = null!;
 
         public virtual ICollection<Employee> Employees { get; set; }
