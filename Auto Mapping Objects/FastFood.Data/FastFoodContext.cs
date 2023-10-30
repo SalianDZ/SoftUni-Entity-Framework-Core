@@ -1,12 +1,8 @@
-﻿using System.Reflection;
+﻿using Microsoft.EntityFrameworkCore;
+using FastFood.Models;
 
 namespace FastFood.Data
 {
-    using Microsoft.EntityFrameworkCore;
-    using Models;
-    using System.Collections.Generic;
-    using System.Reflection.Emit;
-
     public class FastFoodContext : DbContext
     {
         public FastFoodContext()
@@ -19,16 +15,16 @@ namespace FastFood.Data
         {
         }
 
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<Category> Categories { get; set; } = null!;
 
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Item> Items { get; set; }
+        public DbSet<Employee> Employees { get; set; } = null!;
+        public DbSet<Item> Items { get; set; } = null!;
 
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders { get; set; } = null!;
 
-        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; } = null!;
 
-        public DbSet<Position> Positions { get; set; }
+        public DbSet<Position> Positions { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
