@@ -16,7 +16,7 @@
         [Key]
         public string Id { get; set; }
 
-        [StringLength(ValidationConstants.ItemNameMaxLength , MinimumLength = 3)]
+        [MaxLength(ValidationConstants.ItemNameMaxLength)]
         public string? Name { get; set; }
 
         [ForeignKey(nameof(Category))]
@@ -24,7 +24,6 @@
 
         public virtual Category Category { get; set; } = null!;
 
-        [Range(typeof(decimal), "0.01", "79228162514264337593543950335")]
         public decimal Price { get; set; }
 
         public virtual ICollection<OrderItem> OrderItems { get; set; }
