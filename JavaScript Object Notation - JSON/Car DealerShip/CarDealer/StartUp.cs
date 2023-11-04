@@ -186,5 +186,45 @@ namespace CarDealer
 
             return JsonConvert.SerializeObject(localSuppliers, Formatting.Indented);
         }
+
+        public static string GetCarsWithTheirListOfParts(CarDealerContext context)
+        {
+            var carsWithParts = context.Cars
+                .Select(c => new
+                {
+                    car = new
+                    {
+                        c.Make,
+                        c.Model,
+                        c.TraveledDistance
+                    },
+                    parts = c.PartsCars.Select(p => new
+                    {
+                        p.Part.Name,
+                        Price = $"{p.Part.Price:F2}"
+                    })
+                });
+
+            string carsToJson = JsonConvert.SerializeObject(carsWithParts, Formatting.Indented);
+            return carsToJson;
+        }
+
+        public static string GetTotalSalesByCustomer(CarDealerContext context)
+        {
+            var totalSales = context.Customers
+                .Where(c => c.Sales.Count() > 0)
+                .Select(c => new 
+            {
+                fullName = c.Name,
+                boughtCars = c.Sales.Count(),
+                spentMoney = c.Sales.Sum(s => s.Car.PartsCars.Sum(cp => cp.Part.Price))
+            })
+                .OrderByDescending(c => c.spentMoney)
+                .ThenByDescending(c => c.boughtCars)
+                .ToArray();
+
+            string customersToJson = JsonConvert.SerializeObject(totalSales, Formatting.Indented);
+            return customersToJson;
+        }
     }
 }
