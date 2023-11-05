@@ -4,6 +4,7 @@ using CarDealer.DTOs.Import;
 using CarDealer.Models;
 using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json;
 
 namespace CarDealer
@@ -14,7 +15,7 @@ namespace CarDealer
         {
             CarDealerContext context = new CarDealerContext();
             //string inputJson = File.ReadAllText(@"../../../Datasets/sales.json");
-            string result = GetLocalSuppliers(context);
+            string result = GetSalesWithAppliedDiscount(context);
             Console.WriteLine(result);
         }
 
@@ -225,6 +226,29 @@ namespace CarDealer
 
             string customersToJson = JsonConvert.SerializeObject(totalSales, Formatting.Indented);
             return customersToJson;
+        }
+
+        public static string GetSalesWithAppliedDiscount(CarDealerContext context)
+        {
+            var sales = context.Sales
+                .Take(10)
+                .Select(s => new
+                {
+                    car = new
+                    {
+                        s.Car.Make,
+                        s.Car.Model,
+                        s.Car.TraveledDistance
+                    },
+                    customerName = s.Customer.Name,
+                    discount = $"{s.Discount:F2}",
+                    price = $"{s.Car.PartsCars.Sum(pc => pc.Part.Price):F2}",
+                    priceWithDiscount = $"{s.Car.PartsCars.Sum(pc => pc.Part.Price) * (1 - (s.Discount / 100)):F2}",
+                })
+                .ToArray();
+
+            string salesToJson = JsonConvert.SerializeObject(sales, Formatting.Indented);
+            return salesToJson;
         }
     }
 }
