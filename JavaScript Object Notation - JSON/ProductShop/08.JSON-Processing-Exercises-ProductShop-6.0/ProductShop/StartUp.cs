@@ -6,6 +6,7 @@ using ProductShop.Data;
 using ProductShop.DTOs.Import;
 using ProductShop.Models;
 using System.Data;
+using System.Xml.XPath;
 
 namespace ProductShop
 {
@@ -15,7 +16,7 @@ namespace ProductShop
         {
             ProductShopContext context = new();
             //string inputJson = File.ReadAllText("../../../Datasets/categories-products.json");
-            string result = GetSoldProducts(context);
+            string result = GetCategoriesByProductsCount(context);
             Console.WriteLine(result);
         }
 
@@ -124,8 +125,6 @@ namespace ProductShop
 
         public static string GetSoldProducts(ProductShopContext context)
         {
-            IContractResolver contractResolver = ConfigureCamelCaseNaming();
-
             var usersWithSoldProducts = context.Users
                 .Where(u => u.ProductsSold.Any(p => p.Buyer != null))
                 .OrderBy(u => u.LastName)
@@ -147,6 +146,23 @@ namespace ProductShop
                 .ToArray();
 
             return JsonConvert.SerializeObject(usersWithSoldProducts, Formatting.Indented);
+        }
+
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories = context.Categories
+                .OrderByDescending(c => c.CategoriesProducts.Count())
+                .Select(c => new
+                {
+                    category = c.Name,
+                    productsCount = c.CategoriesProducts.Count(),
+                    averagePrice = $"{c.CategoriesProducts.Average(cp => cp.Product.Price):f2}",
+                    totalRevenue = $"{c.CategoriesProducts.Sum(cp => cp.Product.Price)}"
+                })
+                .AsNoTracking()
+                .ToArray();
+
+            return JsonConvert.SerializeObject(categories, Formatting.Indented);
         }
 
         private static IContractResolver ConfigureCamelCaseNaming()
