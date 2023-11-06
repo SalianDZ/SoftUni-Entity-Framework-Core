@@ -16,7 +16,7 @@ namespace ProductShop
         {
             ProductShopContext context = new();
             //string inputJson = File.ReadAllText("../../../Datasets/categories-products.json");
-            string result = GetCategoriesByProductsCount(context);
+            string result = GetUsersWithProducts(context);
             Console.WriteLine(result);
         }
 
@@ -163,6 +163,62 @@ namespace ProductShop
                 .ToArray();
 
             return JsonConvert.SerializeObject(categories, Formatting.Indented);
+        }
+
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            IContractResolver contractResolver = ConfigureCamelCaseNaming();
+
+            var users = context
+                .Users
+                .Where(u => u.ProductsSold.Any(p => p.Buyer != null))
+                .Select(u => new
+                {
+                    // UserDTO
+                    u.FirstName,
+                    u.LastName,
+                    u.Age,
+                    SoldProducts = new
+                    {
+                        // ProductWrapperDTO
+                        Count = u.ProductsSold
+                            .Count(p => p.Buyer != null),
+                        Products = u.ProductsSold
+                            .Where(p => p.Buyer != null)
+                            .Select(p => new
+                            {
+                                // ProductDTO
+                                p.Name,
+                                p.Price
+                            })
+                            .ToArray()
+                    }
+                })
+                .OrderByDescending(u => u.SoldProducts.Count)
+                .AsNoTracking()
+                .ToArray();
+
+            var userWrapperDto = new
+            {
+                UsersCount = users.Length,
+                Users = users
+            };
+
+            return JsonConvert.SerializeObject(userWrapperDto,
+                Formatting.Indented,
+                new JsonSerializerSettings()
+                {
+                    ContractResolver = contractResolver,
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+        }
+
+        private static IMapper CreateMapper()
+        {
+            return new Mapper(new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<ProductShopProfile>();
+            }));
         }
 
         private static IContractResolver ConfigureCamelCaseNaming()
