@@ -21,7 +21,7 @@ namespace CarDealer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cars", x => x.Id);
+                    table.PrimaryKey("PK_Cars", x => x.Id); 
                 });
 
             migrationBuilder.CreateTable(
