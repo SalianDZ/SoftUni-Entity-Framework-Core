@@ -3,6 +3,8 @@ using CarDealer.Data;
 using CarDealer.DTOs.Import;
 using CarDealer.Models;
 using CarDealer.Utilities;
+using System.IO;
+using System.Linq.Expressions;
 using System.Xml.Serialization;
 
 namespace CarDealer
@@ -12,12 +14,12 @@ namespace CarDealer
         public static void Main()
         {
             using CarDealerContext context = new CarDealerContext();
-            string inputXml = File.ReadAllText("../../../Datasets/suppliers.xml");
-            string result = ImportSuppliers(context, inputXml);
+            string inputXml = File.ReadAllText("../../../Datasets/parts.xml");
+            string result = ImportParts(context, inputXml);
             Console.WriteLine(result);
         }
 
-        public static string ImportSuppliers(CarDealerContext context, string inputXml)
+        public static string ImportSuppliers(CarDealerContext context, string inputXml) 
         {
             IMapper mapper = InitializeAutoMapper();
             XmlHelper xmlHelper = new XmlHelper();
@@ -55,6 +57,30 @@ namespace CarDealer
 
             return $"Successfully imported {validSuppliers.Count}";
         }
+
+        public static string ImportParts(CarDealerContext context, string inputXml)
+        {
+            IMapper mapper = InitializeAutoMapper();
+            XmlHelper xmlHelper = new XmlHelper();
+            ImportPartDto[] importPartDtos = xmlHelper.Deserialize<ImportPartDto[]>(inputXml, "Parts");
+
+            ICollection<Part> validParts = new HashSet<Part>();
+
+            foreach (var importPartDto in importPartDtos)
+            {
+                if (string.IsNullOrEmpty(importPartDto.Name) || !context.Suppliers.Any(s => s.Id == importPartDto.SupplierId))
+                {
+                    continue;
+                }
+                Part part = mapper.Map<Part>(importPartDto);
+                validParts.Add(part);
+            }
+
+            context.Parts.AddRange(validParts);
+            context.SaveChanges();
+            return $"Successfully imported {validParts.Count}";
+        }
+
 
         private static IMapper InitializeAutoMapper()
             => new Mapper(new MapperConfiguration(cfg =>
