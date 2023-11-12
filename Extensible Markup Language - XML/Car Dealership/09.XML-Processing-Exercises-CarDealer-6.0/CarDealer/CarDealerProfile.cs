@@ -11,6 +11,13 @@ namespace CarDealer
             CreateMap<ImportSupplierDto, Supplier>();
 
             CreateMap<ImportPartDto, Part>();
+
+            CreateMap<ImportCarDto, Car>()
+                .ForSourceMember(s => s.Parts, opt => opt.DoNotValidate());
+
+            CreateMap<ImportCustomerDto, Customer>();
+
+            CreateMap<ImportSaleDto, Sale>();
         }
     }
 }
