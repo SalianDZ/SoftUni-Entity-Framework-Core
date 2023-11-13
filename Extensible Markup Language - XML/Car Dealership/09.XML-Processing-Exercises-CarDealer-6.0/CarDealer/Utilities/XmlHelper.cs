@@ -1,6 +1,7 @@
 ﻿using CarDealer.DTOs.Export;
 using CarDealer.DTOs.Import;
 using CarDealer.Models;
+using System.Collections;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -61,6 +62,35 @@ namespace CarDealer.Utilities
             namespaces.Add(string.Empty, string.Empty);
 
             StringBuilder sb = new();
+
+            using StringWriter sw = new StringWriter(sb);
+            xmlSerializer.Serialize(sw, obj, namespaces);
+
+            return sb.ToString().TrimEnd();
+        }
+
+        public string SerializeToXml<T>(T obj, string rootName)
+        {
+            XmlRootAttribute xmlRoot = new XmlRootAttribute(rootName);
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(T), xmlRoot);
+
+            if (obj is IEnumerable enumerable)
+            {
+                var listType = typeof(List<>).MakeGenericType(obj.GetType().GetGenericArguments()[0]);
+                var list = (IList)Activator.CreateInstance(listType);
+
+                foreach (var item in enumerable)
+                {
+                    list.Add(item);
+                }
+
+                obj = (T) list;
+            }
+
+            XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+            namespaces.Add(string.Empty, string.Empty);
+
+            StringBuilder sb = new StringBuilder();
 
             using StringWriter sw = new StringWriter(sb);
             xmlSerializer.Serialize(sw, obj, namespaces);

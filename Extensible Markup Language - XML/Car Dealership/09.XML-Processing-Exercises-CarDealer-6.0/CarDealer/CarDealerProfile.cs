@@ -32,6 +32,16 @@ namespace CarDealer
                 opt => opt.MapFrom(src => src.Parts.Count)
             );
 
+            CreateMap<Part, ExportCarPartDto>();
+
+            CreateMap<Car, ExportCarWithPartsDto>()
+                .ForMember(d => d.Parts,
+                opt => opt.MapFrom(s => s.PartsCars.Select(pc => pc.Part).OrderByDescending(p => p.Price).ToArray()));
+
+            CreateMap<Customer, ExportTotalSalesDto>()
+            .ForMember(d => d.FullName, opt => opt.MapFrom(s => s.Name))
+            .ForMember(d => d.BoughtCars, opt => opt.MapFrom(s => s.Sales.Count()))
+            .ForMember(d => d.SpentMoney, opt => opt.MapFrom(s => s.Sales.Sum(x => x.Car.PartsCars.Sum(pc => pc.Part.Price))));
         }
     }
 }
