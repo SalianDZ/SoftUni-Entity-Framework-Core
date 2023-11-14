@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductShop.Data;
 
@@ -11,9 +12,10 @@ using ProductShop.Data;
 namespace ProductShop.Migrations
 {
     [DbContext(typeof(ProductShopContext))]
-    partial class ProductShopContextModelSnapshot : ModelSnapshot
+    [Migration("20231114103212_UpdateModels")]
+    partial class UpdateModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,7 +64,7 @@ namespace ProductShop.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("BuyerId")
+                    b.Property<int>("BuyerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -132,7 +134,8 @@ namespace ProductShop.Migrations
                     b.HasOne("ProductShop.Models.User", "Buyer")
                         .WithMany("ProductsBought")
                         .HasForeignKey("BuyerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("ProductShop.Models.User", "Seller")
                         .WithMany("ProductsSold")
