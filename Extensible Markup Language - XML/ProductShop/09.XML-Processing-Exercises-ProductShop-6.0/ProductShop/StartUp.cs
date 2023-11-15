@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using ProductShop.Data;
+using ProductShop.DTOs.Export;
 using ProductShop.DTOs.Import;
 using ProductShop.Models;
 using ProductShop.Utilities;
 using System.ComponentModel;
+using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ProductShop
 {
@@ -12,8 +16,8 @@ namespace ProductShop
         public static void Main()
         {
             using ProductShopContext context = new ProductShopContext();
-            string inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
-            string result = ImportCategoryProducts(context, inputXml);
+            //string inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
+            string result = GetSoldProducts(context);
             Console.WriteLine(result);
         }
 
@@ -97,6 +101,47 @@ namespace ProductShop
             context.CategoryProducts.AddRange(validCategoryProducts);
             context.SaveChanges();
             return $"Successfully imported {validCategoryProducts.Count}";
+        }
+
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            IMapper mapper = InitializeAutoMapper();
+            XmlHelper helper = new();
+
+            ExportProductsInRangeDto[] products = context.Products
+                .Where(p => p.Price >= 500 && p.Price <= 1000)
+                .OrderBy(p => p.Price)
+                .Select(p => new ExportProductsInRangeDto()
+                {
+                    Name = p.Name,
+                    Price = p.Price,
+                    Buyer = $"{p.Buyer.FirstName} {p.Buyer.LastName}"
+                })
+                .Take(10)
+                .ToArray();
+
+            return helper.Serialize<ExportProductsInRangeDto[]>(products, "Products");
+        }
+
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            XmlHelper helper = new();
+
+            ExportUsersWithSoldProductsDto[] users = context.Users
+                .Where(u => u.ProductsSold.Count >= 1)
+                .OrderBy(u => u.LastName).ThenBy(u => u.FirstName)
+                .Take(5)
+                .Select(u => new ExportUsersWithSoldProductsDto()
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    SoldProducts = u.ProductsSold.Select(ps => new ExportProductDto()
+                    {
+                        Name = ps.Name,
+                        Price = ps.Price
+                    }).ToArray()
+                }).ToArray();
+            return helper.Serialize<ExportUsersWithSoldProductsDto[]>(users, "Users");
         }
 
         private static IMapper InitializeAutoMapper()
