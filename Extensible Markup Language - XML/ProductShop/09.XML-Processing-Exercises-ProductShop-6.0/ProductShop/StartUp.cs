@@ -17,7 +17,7 @@ namespace ProductShop
         {
             using ProductShopContext context = new ProductShopContext();
             //string inputXml = File.ReadAllText("../../../Datasets/categories-products.xml");
-            string result = GetSoldProducts(context);
+            string result = GetUsersWithProducts(context);
             Console.WriteLine(result);
         }
 
@@ -123,25 +123,80 @@ namespace ProductShop
             return helper.Serialize<ExportProductsInRangeDto[]>(products, "Products");
         }
 
-        public static string GetSoldProducts(ProductShopContext context)
+        //!!!!Not working due to changed DTO for other exercise
+        //public static string GetSoldProducts(ProductShopContext context)
+        //{
+        //    XmlHelper helper = new();
+
+        //    ExportUsersWithSoldProductsDto[] users = context.Users
+        //        .Where(u => u.ProductsSold.Count >= 1)
+        //        .OrderBy(u => u.LastName).ThenBy(u => u.FirstName)
+        //        .Take(5)
+        //        .Select(u => new ExportUsersWithSoldProductsDto()
+        //        {
+        //            FirstName = u.FirstName,
+        //            LastName = u.LastName,
+        //            SoldProducts = u.ProductsSold.Select(ps => new ExportProductDto()
+        //            {
+        //                Name = ps.Name,
+        //                Price = ps.Price
+        //            }).ToArray()
+        //        }).ToArray();
+        //    return helper.Serialize<ExportUsersWithSoldProductsDto[]>(users, "Users");
+        //}
+
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            XmlHelper hellper = new();
+
+            ExportCategoriesByProductDto[] products = context.Categories
+                .Select(c => new ExportCategoriesByProductDto()
+                {
+                    Name = c.Name,
+                    Count = c.CategoryProducts.Count(),
+                    AveragePrice = c.CategoryProducts.Select(cp => cp.Product).Average(cp => cp.Price),
+                    TotalRevenue = c.CategoryProducts.Select(cp => cp.Product).Sum(cp => cp.Price)
+                })
+                .OrderByDescending(p => p.Count).ThenBy(p => p.TotalRevenue)
+                .ToArray();
+
+           return hellper.Serialize<ExportCategoriesByProductDto[]>(products, "Categories");
+        }
+
+        public static string GetUsersWithProducts(ProductShopContext context)
         {
             XmlHelper helper = new();
 
-            ExportUsersWithSoldProductsDto[] users = context.Users
+            UserInfoOutputModel[] userProducts = context.Users
                 .Where(u => u.ProductsSold.Count >= 1)
-                .OrderBy(u => u.LastName).ThenBy(u => u.FirstName)
-                .Take(5)
-                .Select(u => new ExportUsersWithSoldProductsDto()
+                .OrderByDescending(u => u.ProductsSold.Count())
+                .Select(u => new UserInfoOutputModel()
                 {
                     FirstName = u.FirstName,
                     LastName = u.LastName,
-                    SoldProducts = u.ProductsSold.Select(ps => new ExportProductDto()
+                    Age = u.Age,
+                    SoldProducts = new SoldProductInfoOutputModel()
                     {
-                        Name = ps.Name,
-                        Price = ps.Price
-                    }).ToArray()
-                }).ToArray();
-            return helper.Serialize<ExportUsersWithSoldProductsDto[]>(users, "Users");
+                        Count = u.ProductsSold.Count,
+                        Products = u.ProductsSold.Select(ps => new ExportProductDto()
+                        {
+                            Name = ps.Name,
+                            Price = ps.Price
+                        })
+                        .OrderByDescending(p => p.Price)
+                        .ToArray()
+                    }
+                })
+                .Take(10)
+                .ToArray();
+
+            UserProductOutputModel userProductsDto = new UserProductOutputModel()
+            {
+                Count = context.Users.Count(u => u.ProductsSold.Any()),
+                Users = userProducts
+            };
+
+            return helper.Serialize<UserProductOutputModel>(userProductsDto, "Users");
         }
 
         private static IMapper InitializeAutoMapper()

@@ -11,7 +11,10 @@ namespace ProductShop.DTOs.Export
         [XmlElement("lastName")]
         public string LastName { get; set; } = null!;
 
-        [XmlArray("soldProducts")]
-        public ExportProductDto[] SoldProducts { get; set; } = null!;
+        [XmlElement("age")]
+        public int Age { get; set; }
+
+        [XmlElement("SoldProducts")]
+        public ExportSoldProductsDto SoldProducts { get; set; } = null!;
     }
 }
