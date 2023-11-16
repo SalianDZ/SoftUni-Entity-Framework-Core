@@ -5,8 +5,6 @@ using CarDealer.DTOs.Export;
 using CarDealer.DTOs.Import;
 using CarDealer.Models;
 using CarDealer.Utilities;
-using Castle.Core.Resource;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -18,7 +16,7 @@ namespace CarDealer
         {
             using CarDealerContext context = new CarDealerContext();
             //string inputXml = File.ReadAllText("../../../Datasets/sales.xml");
-            string result = GetTotalSalesByCustomer(context);
+            string result = GetSalesWithAppliedDiscount(context);
             Console.WriteLine(result);
         }
 
@@ -266,6 +264,29 @@ namespace CarDealer
             xmlSerializer.Serialize(writer, totalSalesDtos, namespaces);
 
             return sb.ToString().TrimEnd();
+        }
+
+        public static string GetSalesWithAppliedDiscount(CarDealerContext context)
+        {
+            XmlHelper xmlHelper = new XmlHelper();
+
+            ExportSalesWithInfoDto[] sales = context.Sales
+                .Select(s => new ExportSalesWithInfoDto()
+                {
+                    Car = new ExportCarInSaleDto()
+                    {
+                        Make = s.Car.Make,
+                        Model = s.Car.Model,
+                        TraveledDistance = s.Car.TraveledDistance
+                    },
+                    Discount = s.Discount,
+                    CustomerName = s.Customer.Name,
+                    Price = (double)s.Car.PartsCars.Sum(pc => pc.Part.Price),
+                    PriceWithDiscount = (double)(s.Car.PartsCars.Sum(pc => pc.Part.Price) - (s.Car.PartsCars.Sum(pc => pc.Part.Price) * (s.Discount / 100)))
+                })
+                .ToArray();
+
+            return xmlHelper.Serialize<ExportSalesWithInfoDto[]>(sales, "sales");
         }
 
         private static IMapper InitializeAutoMapper()
