@@ -26,7 +26,7 @@ namespace Invoices.Data
             {
                 optionsBuilder
                     .UseSqlServer(Configuration.ConnectionString)
-                    .UseLazyLoadingProxies()s
+                    .UseLazyLoadingProxies()
                     .EnableSensitiveDataLogging();
             }
         }

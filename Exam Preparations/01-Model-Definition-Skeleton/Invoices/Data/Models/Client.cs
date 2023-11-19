@@ -22,10 +22,10 @@ namespace Invoices.Data.Models
         [StringLength(15)]
         public string NumberVat { get; set; } = null!;
 
-        public ICollection<Invoice> Invoices { get; set; }
+        public virtual ICollection<Invoice> Invoices { get; set; }
 
-        public ICollection<Address> Addresses { get; set; }
+        public virtual ICollection<Address> Addresses { get; set; }
 
-        public ICollection<ProductClient> ProductsClients { get; set; }
+        public virtual ICollection<ProductClient> ProductsClients { get; set; }
     }
 }
