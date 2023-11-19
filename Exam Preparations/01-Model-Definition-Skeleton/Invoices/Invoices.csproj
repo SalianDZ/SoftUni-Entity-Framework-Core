@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <Folder Include="DataProcessor\ExportDto\" />
-    <Folder Include="DataProcessor\ImportDto\" />
+    <Folder Include="DataProcessor\ExportDto\" />
   </ItemGroup>
 
 </Project>

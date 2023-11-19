@@ -1,15 +1,20 @@
 ﻿using Invoices.Data.Models.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Invoices.Data.Models
+namespace Invoices.DataProcessor.ImportDto
 {
-    public class Invoice
+    public class ImportInvoiceDto
     {
-        [Key]
-        public int Id { get; set; }
+        //"Number": 1427940691,
+        //"IssueDate": "2022-08-29T00:00:00",
+        //"DueDate": "2022-10-28T00:00:00",
+        //"Amount": 913.13,
+        //"CurrencyType": 1,
+        //"ClientId": 1
+
 
         [Required]
+        [Range(1000000000, 1500000000)]
         public int Number { get; set; }
 
         [Required]
@@ -22,12 +27,10 @@ namespace Invoices.Data.Models
         public decimal Amount { get; set; }
 
         [Required]
+        [Range(0, 2)]
         public CurrencyType CurrencyType { get; set; }
 
         [Required]
         public int ClientId { get; set; }
-
-        [ForeignKey(nameof(ClientId))]
-        public Client Client { get; set; } = null!;
     }
 }

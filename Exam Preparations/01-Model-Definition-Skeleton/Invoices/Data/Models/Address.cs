@@ -30,6 +30,6 @@ namespace Invoices.Data.Models
         public int ClientId { get; set; }
 
         [ForeignKey(nameof(ClientId))]
-        public virtual Client Client { get; set; } = null!;
+        public Client Client { get; set; } = null!;
     }
 }

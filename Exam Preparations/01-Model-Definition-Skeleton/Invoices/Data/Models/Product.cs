@@ -23,6 +23,6 @@ namespace Invoices.Data.Models
         [Required]
         public CategoryType CategoryType { get; set; }
 
-        public virtual ICollection<ProductClient> ProductsClients { get; set; }
+        public ICollection<ProductClient> ProductsClients { get; set; }
     }
 }
