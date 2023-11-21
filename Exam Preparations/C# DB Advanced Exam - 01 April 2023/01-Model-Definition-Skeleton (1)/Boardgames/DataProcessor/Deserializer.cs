@@ -1,13 +1,16 @@
 ﻿namespace Boardgames.DataProcessor
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Reflection.Metadata.Ecma335;
     using System.Text;
+    using System.Text.RegularExpressions;
     using Boardgames.Data;
     using Boardgames.Data.Models;
     using Boardgames.Data.Models.Enums;
     using Boardgames.DataProcessor.ImportDto;
     using Boardgames.Utilities;
     using Microsoft.EntityFrameworkCore;
+    using Newtonsoft.Json;
 
     public class Deserializer
     {
@@ -73,7 +76,56 @@
 
         public static string ImportSellers(BoardgamesContext context, string jsonString)
         {
-            throw new NotImplementedException();
+            ImportSellersDto[] sellerDtos = JsonConvert.DeserializeObject<ImportSellersDto[]>(jsonString);
+
+            ICollection<Seller> validSellers = new HashSet<Seller>();
+            StringBuilder sb = new();
+            foreach (var sellerDto in sellerDtos)
+            {
+                if (!IsValid(sellerDto))
+                {
+                    sb.AppendLine(ErrorMessage);
+                    continue;
+                }
+
+                string pattern = @"^www\.[a-zA-Z0-9-]+\.com$";
+
+                if (!Regex.IsMatch(sellerDto.Website, pattern))
+                {
+                    sb.AppendLine(ErrorMessage);
+                    continue;
+                }
+
+                Seller seller = new Seller()
+                {
+                    Name = sellerDto.Name,
+                    Address = sellerDto.Address,
+                    Country = sellerDto.Country,
+                    Website = sellerDto.Website,
+                };
+
+                foreach (var boardgameDto in sellerDto.Boardgames.Distinct())
+                {
+                    Boardgame boardgame = context.Boardgames.Find(boardgameDto);
+                    if (boardgame == null || !IsValid(boardgameDto))
+                    {
+                        sb.AppendLine(ErrorMessage);
+                        continue;
+                    }
+
+                    seller.BoardgamesSellers.Add(new BoardgameSeller()
+                    {
+                        BoardgameId = boardgame.Id
+                    });
+                }
+
+                validSellers.Add(seller);
+                sb.AppendLine(String.Format(SuccessfullyImportedSeller, seller.Name, seller.BoardgamesSellers.Count()));
+            }
+
+            context.Sellers.AddRange(validSellers);
+            context.SaveChanges();
+            return sb.ToString().TrimEnd();
         }
 
         private static bool IsValid(object dto)
