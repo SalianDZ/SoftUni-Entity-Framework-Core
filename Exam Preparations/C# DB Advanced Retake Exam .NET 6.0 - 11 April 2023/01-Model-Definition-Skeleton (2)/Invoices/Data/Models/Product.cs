@@ -15,9 +15,8 @@ namespace Invoices.Data.Models
 
         [Required]
         [StringLength(30)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        [Required]
         public decimal Price { get; set; }
 
         [Required]

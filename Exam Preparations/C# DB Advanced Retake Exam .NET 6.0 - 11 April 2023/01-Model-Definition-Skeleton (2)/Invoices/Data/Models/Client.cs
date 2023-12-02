@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection.PortableExecutable;
 
 namespace Invoices.Data.Models
 {
@@ -6,9 +7,9 @@ namespace Invoices.Data.Models
     {
         public Client()
         {
+            Invoices = new HashSet<Invoice>();
             Addresses = new HashSet<Address>();
             ProductsClients = new HashSet<ProductClient>();
-            Invoices = new HashSet<Invoice>();
         }
 
         [Key]

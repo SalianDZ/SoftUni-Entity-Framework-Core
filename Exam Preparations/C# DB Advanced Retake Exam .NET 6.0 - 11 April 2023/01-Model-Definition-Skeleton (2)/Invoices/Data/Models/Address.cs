@@ -12,7 +12,6 @@ namespace Invoices.Data.Models
         [StringLength(20)]
         public string StreetName { get; set; } = null!;
 
-        [Required]
         public int StreetNumber { get; set; }
 
         [Required]
@@ -26,7 +25,6 @@ namespace Invoices.Data.Models
         [StringLength(15)]
         public string Country { get; set; } = null!;
 
-        [Required]
         public int ClientId { get; set; }
 
         [ForeignKey(nameof(ClientId))]

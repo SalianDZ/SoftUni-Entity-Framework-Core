@@ -12,7 +12,7 @@ namespace Invoices.DataProcessor.ImportDto
         [XmlElement("StreetName")]
         public string StreetName { get; set; } = null!;
 
-        [Required]
+
         [XmlElement("StreetNumber")]
         public int StreetNumber { get; set; }
 

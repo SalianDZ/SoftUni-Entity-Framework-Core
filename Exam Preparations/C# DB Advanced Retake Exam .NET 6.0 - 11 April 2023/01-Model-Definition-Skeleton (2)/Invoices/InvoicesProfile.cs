@@ -6,7 +6,7 @@ namespace Invoices
     {
         public InvoicesProfile()
         {
-
+           
         }
     }
 }

@@ -40,7 +40,7 @@
   },
   {
     "Name": "MAHLE KC 522D",
-    "Price": 108.30,
+    "Price": 108.3,
     "Category": "Tyres",
     "Clients": [
       {
@@ -62,10 +62,6 @@
       {
         "Name": "SARL SOVI 34",
         "NumberVat": "FR63432629426"
-      },
-      {
-        "Name": "SPEDOX,SRO",
-        "NumberVat": "SK2023911087"
       },
       {
         "Name": "TEAM SERVICE CAR SRL",
@@ -141,7 +137,7 @@
   },
   {
     "Name": "Break pads for trailer",
-    "Price": 89.60,
+    "Price": 89.6,
     "Category": "Tyres",
     "Clients": [
       {
