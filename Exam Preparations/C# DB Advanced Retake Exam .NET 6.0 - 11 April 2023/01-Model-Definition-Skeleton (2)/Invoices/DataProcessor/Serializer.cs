@@ -69,7 +69,7 @@
                 .Take(5)
                 .ToArray();
 
-            return JsonConvert.SerializeObject(products, Formatting.Indented);
+            return JsonConvert.SerializeObject(products);
         }
     }
 }
