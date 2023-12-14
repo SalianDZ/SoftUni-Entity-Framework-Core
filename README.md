@@ -8,7 +8,7 @@ Database Management Mastery:
 Explored efficient database management, mastered transaction intricacies, and fine-tuned data manipulation skills. 🎛️
 
 Crafting Robust Back-End Architectures:
-Elevated my skills by creating fundamental back-end architectures, essential for robust and scalable applications. 🏗️
+Elevated my skills by creating fundamental back-end architectures, essential for robust, flexible and scalable applications. 🏗️
 
 ACID Model Expertise:
 Navigated the complexities of the ACID model, ensuring reliability and consistency in database transactions. 🔄
