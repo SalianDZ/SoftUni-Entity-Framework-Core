@@ -20,7 +20,7 @@ Code First and Database First Approaches:
 Mastered both Code First and Database First approaches, bringing versatility to database development. 🚀
 
 LINQ Query Proficiency:
-Harnessed the power of LINQ queries for efficient data retrieval and manipulation. 🔍
+Harnessed the power of LINQ queriess for efficient data retrieval and manipulation. 🔍
 
 ORM Magic:
 Dived into Object-Relational Mapping (ORM), simplifying and streamlining database operations for cleaner, maintainable code. 🧙‍♂️
